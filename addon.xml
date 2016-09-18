@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.tk_del" name="Telekom Eishockey" version="0.0.1" provider-name="hubsif">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+        <summary lang="de">Videos von www.telekomeishockey.de ansehen</summary>
+        <summary lang="en">Watch videos from www.telekomeishockey.de</summary>
+        <description lang="de">Video Portal der Telekom zur DEL mit allen Spielen live und als Wiederholung. Für einen Teil der Videos ist eine Registrierung bei www.telekomeishockey.de nötig, die für Telekomkunden mit Flatrate kostenlos ist.</description>
+        <description lang="en">Watch all videos of DEL matches from www.telekomeishockey.de. In order to access some of the videos, you need to register at www.telekomeishockey.de, which is for free for flatrate customers of German Telekom.</description>
+    </extension>
+</addon>
