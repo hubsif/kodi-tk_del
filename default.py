@@ -159,9 +159,12 @@ elif mode[0] == '4':
         start = datetime.datetime.strptime(scheduled_start, format)
     except TypeError:
         start = datetime.datetime(*(time.strptime(scheduled_start, format)[0:6]))
-        
+
+    # 'scheduled_start' reflects beginning of game, stream starts 15 minutes earlier
+    start = start - datetime.timedelta(minutes=15)
+
     if now < start:
-        xbmcgui.Dialog().ok(_addon_name, __language__(30004), "", args['scheduled_start'][0])
+        xbmcgui.Dialog().ok(_addon_name, __language__(30004), "", str(start))
     else:
         if args['isPay'][0] == 'True':
             if not _addon.getSetting('username'):
