@@ -62,8 +62,6 @@ def get_live(json):
 ##############
 
 import datetime
-datetime.datetime.now()
-datetime.datetime.utcnow()
 
 browser = mechanize.Browser()
 browser.set_handle_robots(False)
@@ -88,10 +86,6 @@ if mode is None:
     # load menu
     response = urllib.urlopen("https://www.telekomeishockey.de/feeds/appfeed.php?type=videolist").read()
     jsonResult = json.loads(response)
-
-    menuitems = set()
-    for content in jsonResult['content']:
-        menuitems.add(content['mediatype_title'])
 
     for mediatype in jsonResult['mediatypes']:
         if mediatype['title'].upper() in ['LIVE', 'VEREINSUPLOAD']:
