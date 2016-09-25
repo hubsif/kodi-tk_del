@@ -83,6 +83,7 @@ ssl.wrap_socket = sslwrap(ssl.wrap_socket)
 args = urlparse.parse_qs(sys.argv[2][1:])
 mode = args.get('mode', None)
 
+# main menu, showing 'mediatypes'
 if mode is None:
     # load menu
     response = urllib.urlopen("https://www.telekomeishockey.de/feeds/appfeed.php?type=videolist").read()
@@ -93,24 +94,63 @@ if mode is None:
         menuitems.add(content['mediatype_title'])
 
     for mediatype in jsonResult['mediatypes']:
-        url = build_url({'mode': '1', 'mediatype_id': mediatype['id']})
+        if mediatype['title'].upper() in ['LIVE', 'VEREINSUPLOAD']:
+            url = build_url({'mode': '2', 'mediatype_id': mediatype['id']})
+        else:
+            url = build_url({'mode': '1', 'mediatype_id': mediatype['id']})
         li = xbmcgui.ListItem(mediatype['title'].upper(), iconImage='DefaultFolder.png')
         xbmcplugin.addDirectoryItem(handle=_addon_handler, url=url, listitem=li, isFolder=True)
 
     xbmcplugin.endOfDirectory(_addon_handler)
 
+# submenu, showing 'round'
 elif mode[0] == '1':
-    response = urllib.urlopen("https://www.telekomeishockey.de/feeds/appfeed.php?type=videolist&mediatype="+args['mediatype_id'][0]).read()
-    jsonResult = json.loads(response)
-    
-    for content in jsonResult['content']:
-        url = build_url({'mode': '4', 'id': content['id'], 'scheduled_start': content['scheduled_start'], 'isPay': content['isPay'], 'thumbnailImage': 'https://www.telekomeishockey.de' + content['teaser_image_small']})
-        li = xbmcgui.ListItem(content['title_long'], iconImage='https://www.telekomeishockey.de' + content['teaser_image_small'])
-        li.setProperty('fanart_image', 'https://www.telekomeishockey.de' + content['teaser_image_big'])
-        li.setProperty('IsPlayable', 'true')
-        xbmcplugin.addDirectoryItem(handle=_addon_handler, url=url, listitem=li)
+    menuitems = set()
+    page = 1
+
+    while True:
+        response = urllib.urlopen("https://www.telekomeishockey.de/feeds/appfeed.php?type=videolist&mediatype="+args['mediatype_id'][0]+"&page="+str(page)).read()
+        jsonResult = json.loads(response)
+
+        for content in jsonResult['content']:
+            menuitems.add(content['round_1'] + " - " + content['round_2'])
+
+        if page < jsonResult['total_pages']:
+            page += 1
+        else:
+           break
+
+    for menuitem in sorted(menuitems):
+        url = build_url({'mode': '2', 'mediatype_id': args['mediatype_id'][0], 'round': menuitem})
+        li = xbmcgui.ListItem(menuitem, iconImage='DefaultFolder.png')
+        xbmcplugin.addDirectoryItem(handle=_addon_handler, url=url, listitem=li, isFolder=True)
+
     xbmcplugin.endOfDirectory(_addon_handler)
 
+# submenu, showing video items
+elif mode[0] == '2':
+    page = 1
+
+    while True:
+        response = urllib.urlopen("https://www.telekomeishockey.de/feeds/appfeed.php?type=videolist&mediatype="+args['mediatype_id'][0]+"&page="+str(page)).read()
+        jsonResult = json.loads(response)
+
+        for content in jsonResult['content']:
+            if not 'round' in args or args['round'][0] == content['round_1'] + " - " + content['round_2']:
+                url = build_url({'mode': '4', 'id': content['id'], 'scheduled_start': content['scheduled_start'], 'isPay': content['isPay'], 'thumbnailImage': 'https://www.telekomeishockey.de' + content['teaser_image_small']})
+                li = xbmcgui.ListItem(content['title_long'].split('|')[0], iconImage='https://www.telekomeishockey.de' + content['teaser_image_small'])
+                li.setProperty('fanart_image', 'https://www.telekomeishockey.de' + content['teaser_image_big'])
+                li.setProperty('IsPlayable', 'true')
+                xbmcplugin.addDirectoryItem(handle=_addon_handler, url=url, listitem=li)
+
+        if page < jsonResult['total_pages']:
+            page += 1
+        else:
+           break
+
+    xbmcplugin.endOfDirectory(_addon_handler)
+
+# stream selected video
 elif mode[0] == '4':
     scheduled_start = args['scheduled_start'][0]
     now = datetime.datetime.now()
