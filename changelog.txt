@@ -1,2 +1,7 @@
+1.0.0 (2016/09/25)
+- enable stream 15 minutes earlier (thanks to Mirco)
+- show more than 10 video items (load all remote pages)
+- reorganize menu structure, categorize 'GAMEREPORT' and 'WIEDERHOLUNG'
+
 0.0.1 (2016/09/18)
 - initial beta release
