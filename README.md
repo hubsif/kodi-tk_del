@@ -1,6 +1,8 @@
 Kodi Telekom Eishockey (Deutsche Eishockey Liga) Addon
 ======================================================
 
+**Note: This Addon has been replaced by [kodi-telekomsport](https://github.com/hubsif/kodi-telekomsport)!**
+
 About
 -----
 
